@@ -1,0 +1,124 @@
+<div class="omcontainer dashboard-grafics">
+  <div class="row topheader">
+    <div class="col-6">
+      <p class="title left">Dashboard</p>
+    </div>
+    <div class="col-6">
+      <p class="title right">{{ empresa.nome }}</p>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-4">
+      <div class="row grafic-box-info">
+        <div class="col-3 tag">
+          <p>
+            <i class="material-icons">
+              work_outline
+            </i> </p>
+        </div>
+        <div class="col-3 info">
+          <p>{{ graficos.totalCasosEmpresa }}</p>
+        </div>
+        <div class="col-5">
+          <p>Casos</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-4">
+      <div class="row grafic-box-info">
+        <div class="col-3 tag">
+          <p>
+            <i class="material-icons">
+              account_circle
+            </i> </p>
+        </div>
+        <div class="col-3 info">
+          <p>{{ reps.length }}</p>
+        </div>
+        <div class="col-5">
+          <p>Representantes</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-4">
+      <div class="row grafic-box-info last">
+        <div class="col-3 tag">
+          <p>
+            <i class="material-icons">
+              assessment
+            </i>
+          </p>
+        </div>
+        <div class="col-9 rlt">
+          <p>
+            <button class="btn lg-primary"> Gerar relatório </button>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="space-out"></div>
+  <div class="row title-box">
+    <div class="col-12">
+      <p>Visão geral dos casos</p>
+    </div>
+  </div>
+  <div class="space-out"></div>
+
+  <div class="row grafic-row">
+    <div class="col-6 grafic-box-left">
+      <p class="status">Status das solicitações</p>
+      <div style="padding: 40px;">
+        <canvas id="charttest"></canvas>
+      </div>
+    </div>
+    <div class="col-6 grafic-box-right">
+      <p class="status">Status das mediações finalizadas</p>
+      <div style="padding: 40px;">
+        <canvas id="chartStatus"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <div class="space-out"></div>
+  <div class="row title-box">
+    <div class="col-12">
+      <p>Visão geral dos casos por representantes</p>
+    </div>
+  </div>
+  <div class="space-out"></div>
+
+  <div class="row grafic-reps">
+    <p class="status" style=""> Status das mediações finalizadas por representante </p>
+    <div class="grafic-box-rep">
+
+      <div class="col-6">
+        <form [formGroup]="form" id="graficoRep">
+          <div>
+            <div header="Representantes">
+              <p-dropdown placeholder="Selecione o representante" [options]="totalReps" [(ngModel)]="selectedRep"
+                formControlName="repId" (onChange)="updateChartRep()" filter="true">
+                <ng-template let-rep pTemplate="selectedRep">
+                  <img src="/assets/image/user.png" style="width:20px;vertical-align:middle" />
+                  <span style="vertical-align:middle; margin-left: .5em"> {{rep.label}}</span>
+                </ng-template>
+              </p-dropdown>
+            </div>
+
+          </div>
+        </form>
+      </div>
+
+      <div class="col-6">
+        <div>
+          <canvas id="chartRep"></canvas>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

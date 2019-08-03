@@ -1,0 +1,241 @@
+<div class="container">
+
+  <div class="lg-profile">
+    <div class="row">
+
+      <div class="col-4 lg-tab" (click)="showDados()" [ngClass]="{
+        'lg-tab': displayDados,
+        'lg-tab-inactive': !displayDados
+      }">
+        <p>Dados Pessoais</p>
+      </div>
+      <div class="col-4 lg-tab" (click)="showCurriculo()" *ngIf="usuarioLogado.isMediador" [ngClass]="{
+        'lg-tab': displayCurriculo,
+        'lg-tab-inactive': !displayCurriculo
+      }">
+        <p>Currículo</p>
+      </div>
+      <div class="col-4 lg-tab" (click)="showHorarios()" *ngIf="usuarioLogado.isRepresentante || usuarioLogado.isSupervisor"
+        [ngClass]="{
+        'lg-tab': displayHorarios,
+        'lg-tab-inactive': !displayHorarios
+      }">
+        <p>Meus Horários</p>
+      </div>
+
+      <div class="col-12 lg-profile-container">
+        <form [formGroup]="form">
+          <div style="min-height: 400px;">
+            <!-- img -->
+            <div *ngIf="displayDados" class="row">
+              <div class="lg-profile-img perfil">
+                <label for='selecao-arquivo' *ngIf="!usuario.avatarUrl">
+                  <img class="perfil-img" height="120px" width="120px" src="/assets/image/user.png">
+                </label>
+                <label for='selecao-arquivo' *ngIf="usuario.avatarUrl">
+                  <img class="perfil-img" height="120px" width="120px" (mouseover)="mostrarAltFoto()" (mouseleave)="esconderAltFoto()"
+                    [src]="usuario.avatarUrl">
+                </label>
+                <input type="file" class="om-input" id='selecao-arquivo' ngFileSelect [options]="optFoto" (onUpload)="handleUploadFoto($event)">
+                <div *ngIf="exibirAltFoto" class="info"></div>
+                <div class="perfil-info">
+                  <div>
+                    <h4 class="name"></h4>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- img -->
+
+            <!-- Dados Pessoais -->
+            <div *ngIf="displayDados" class="row profile-form">
+              <div class="col-6 ">
+                <label>Nome</label>
+                <input class="ominput" type="text" formControlName="nome" [(ngModel)]="nomeView" required pInputText
+                  placeholder="Nome" />
+              </div>
+
+              <div class="col-6">
+                <span *ngIf="!form.controls['email'].pristine && !form.controls['email'].valid" class="valid"></span>
+                <label>Email</label>
+                <input class="ominput lowercase" type="text" readonly disabled required pInputText formControlName="email"
+                  [(ngModel)]="usuario.pessoaFisica.email" pattern="^[a-zA-z0-9!#$%&'*+\/=?^_`{|}~.-]+@[a-zA-z0-9]([a-z0-9-]*[a-zA-z0-9])?(\.[a-zA-z0-9]([a-z0-9-]*[a-z0-9])?)*$" />
+              </div>
+
+              <div class="col-6">
+                <label>Telefone</label>
+                <p-inputMask mask="(99) 9999-9999" formControlName="fone" [ngModel]="usuario.pessoaFisica.fone"
+                  (ngModelChange)="usuario.pessoaFisica.fone=$event" unmask="true" type="tel" autocomplete="off"
+                  autocorrect="off" autocapitalize="off" spellcheck="false"></p-inputMask>
+              </div>
+
+              <div class="col-6">
+                <label>Celular</label>
+                <p-inputMask mask="(99) 99999-9999" formControlName="celular" [ngModel]="usuario.pessoaFisica.celular"
+                  (ngModelChange)="usuario.pessoaFisica.celular=$event" required unmask="true" type="tel" autocomplete="off"
+                  autocorrect="off" autocapitalize="off" spellcheck="false"></p-inputMask>
+              </div>
+
+              <div class="col-6">
+                <label>Data de nascimento</label>
+                <p-inputMask mask="99/99/9999" formControlName="dtNascimento" [(ngModel)]="dtNascView" required type="tel"
+                  autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></p-inputMask>
+              </div>
+
+              <div class="col-6">
+                <label>CPF</label>
+                <p-inputMask #cpf mask="999.999.999-99" [ngModel]="usuario.pessoaFisica.cpf | cpf" (ngModelChange)="usuario.pessoaFisica.cpf=$event"
+                  formControlName="cpf" required unmask="true" type="tel" autocomplete="off" autocorrect="off"
+                  autocapitalize="off" spellcheck="false"></p-inputMask>
+              </div>
+
+
+              <div class="col-6">
+                <label>RG</label>
+                <input type="text" class="ominput" [(ngModel)]="usuario.pessoaFisica.rg" formControlName="rg"
+                  (keypress)="omitSpecialChar($event)" pattern="^[a-zA-Z0-9]+$" required autocomplete="off" autocorrect="off"
+                  autocapitalize="off" spellcheck="false" />
+              </div>
+
+              <div class="col-3">
+                <label>Orgão emissor</label>
+                <p-inputMask type="text" formControlName="orgaoEmissor" mask="aaa" slotChar="" [autoClear]="false"
+                  formControlName="orgaoEmissor" [(ngModel)]="usuario.pessoaFisica.orgaoEmissor" required></p-inputMask>
+              </div>
+
+              <div class="col-3">
+                <label>UF Orgão Emissor</label>
+                <div>
+                  <p-dropdown [filter]="true" [options]="ufs" formControlName="ufOrgaoEmissor" [(ngModel)]="usuario.pessoaFisica.ufOrgaoEmissor"
+                    required></p-dropdown>
+                </div>
+              </div>
+
+              <div class="col-6">
+                <label>CEP</label>
+                <p-inputMask mask="99999-999" (onBlur)="consultaCEP()" formControlName="cep" name="cep" [ngModel]="usuario.pessoaFisica.cep"
+                  (ngModelChange)="usuario.pessoaFisica.cep=$event" required unmask="true" type="tel" autocomplete="off"
+                  autocorrect="off" autocapitalize="off" spellcheck="false"></p-inputMask>
+              </div>
+              <div class="col-6">
+                <label>Endereço</label>
+                <input class="ominput" type="text" formControlName="endereco" [(ngModel)]="usuario.pessoaFisica.endereco"
+                  required />
+              </div>
+              <div class="col-6">
+                <label>Complemento</label>
+                <input class="ominput" type="text" formControlName="complemento" [(ngModel)]="usuario.pessoaFisica.complemento" />
+              </div>
+
+              <div class="col-3">
+                <label>Cidade</label>
+                <input class="ominput" type="text" formControlName="cidade" [(ngModel)]="usuario.pessoaFisica.cidade"
+                  required />
+              </div>
+
+              <div class="col-3">
+                <label>UF</label>
+                <div>
+                  <p-dropdown [filter]="true" [options]="ufs" formControlName="uf" [(ngModel)]="usuario.pessoaFisica.uf"
+                    required></p-dropdown>
+                </div>
+              </div>
+
+            </div>
+            <!-- Dados Pessoais -->
+
+            <!-- Curriculo -->
+            <div *ngIf="displayCurriculo">
+              <div class="row profile-form" *ngIf="usuarioLogado.isMediador">
+                <div class="col-12" style="padding: 0;">
+                  <div class="div-perfil" style="width: 100%;">
+                    <span>Mini currículo (resumo do currículo)</span>
+                  </div>
+                  <ckeditor [(ngModel)]="usuarioMediador.mediador.miniCurriculo" formControlName="miniCurriculo"
+                    [config]="{uiColor: '#F7F6FC'}" *ngIf="displayEditor" debounce="400">
+                  </ckeditor>
+                </div>
+              </div>
+            </div>
+            <!-- Curriculo -->
+
+            <!-- Horarios -->
+            <div *ngIf="displayHorarios">
+              <form [formGroup]="formDisp">
+                <div class="row profile-form" *ngIf="usuarioLogado.isRepresentante">
+                  <div class="col-12">
+                    <div class="flexcenter lg-info">
+                      <p class="lg-info"> Adicione, exclua ou altere seus horários disponíveis para
+                        mediação.</p>
+                    </div>
+                    <div *ngIf="displayHorarios" class="row flexcenter" style="margin: 20px 0 40px 0;">
+                      <button class="btn lg-primary" (click)="adiciona()">adicionar horário</button>
+                    </div>
+                  </div>
+
+                  <div *ngFor="let d of disp">
+                    <div class="row registered" *ngIf="edit.id !== d.id">
+                      <div class="col-md-3">
+                        <span>Dia da Semana:</span>
+                        <input class="ominput" type="text" placeholder="{{ diaSvc.getDias()[d.dia]['label'] }}"
+                          readonly pInputText />
+                      </div>
+
+                      <div class="col-md-3">
+                        <span>Horário de Início:</span>
+                        <input class="ominput" type="text" placeholder="{{ d.horaini }}:00" readonly pInputText />
+                      </div>
+
+                      <div class="col-md-3">
+                        <span>Horário de Término:</span>
+                        <input class="ominput" type="text" placeholder="{{ d.horafim }}:00" readonly pInputText />
+                      </div>
+
+                      <div class="col-3 lg-actions to-center">
+                        <a (click)="remove(d.id)" class="btn lg-cancel">excluir</a>
+                        <a (click)="edita(d.id)" class="btn lg-primary">editar</a>
+                      </div>
+                    </div>
+
+                    <div>
+                      <div class="row registering" *ngIf="edit.id === d.id">
+                        <div class="col-md-3">
+                          <span>Dia da Semana:</span>
+                          <!--<p-dropdown [options]="dias" formControlName="dia" [(ngModel)]="d.dia"></p-dropdown>-->
+                          <select class="ominput" formControlName="dia" [(ngModel)]="d.dia">
+                            <option *ngFor="let di of dias" [value]="di.value">{{di.label}}</option>
+                          </select>
+                        </div>
+
+                        <div class="col-md-3">
+                          <span>Horário de Início:</span>
+                          <input class="ominput" type="text" maxlength="2" formControlName="ini" [(ngModel)]="d.horaini"
+                            required pInputText />
+                        </div>
+
+                        <div class="col-md-3">
+                          <span>Horário de Término:</span>
+                          <input class="ominput" type="text" maxlength="2" formControlName="fim" [(ngModel)]="d.horafim"
+                            required pInputText />
+                        </div>
+
+                        <div class="col-3 lg-actions to-center">
+                          <a class="btn lg-confirm" (click)="salvaDisp(d.id)">confirmar</a>
+                          <a class="btn lg-cancel" (click)="cancelDisp()">cancelar</a>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <div *ngIf="!displayHorarios" class="row flexcenter" style="margin: 20px 0 40px 0;">
+            <button class="btn lg-primary" (click)="salva()" [disabled]="!form.valid ">Salvar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
