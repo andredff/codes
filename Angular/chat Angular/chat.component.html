@@ -1,0 +1,55 @@
+<div class="conversation">
+    <div id="chat-page" class="chat-sala" style="display: flex;justify-content: center;">
+      <div class="chat-container" style="width: 100%;">
+        <header>
+          <div class="chat-controls">
+            <button [disabled]='!displayControles' *ngIf="usuarioLogado.isMediador" class="control videocall btn-dash"
+              clear (click)="abreConf()"><i class="fa fa-video-camera" aria-hidden="true"></i></button>
+  
+            <button [disabled]='!displayControles' *ngIf="usuarioLogado.isMediador && !emligacao"
+              class="control phonecall no-h btn-dash" (click)="twilioConferencia()"> <i class="fa fa-users"
+                aria-hidden="true"></i></button>
+          </div>
+        </header>
+  
+        <div *ngIf="isOnline === false" class="liga-wrapper">
+          <div class="call-box" style="height: 60%;">
+            <div class="centro">
+              <div class="call-info" style="background-color: #cacaca;padding: 42px;display: flex;">
+                  <i class="material-icons" style="padding: 10px;color: white;">  signal_wifi_off </i>
+                <p class="title" style="margin: 0;padding: 10px;color: white !important;">  Sem conexão com internet</p>
+              </div>
+            </div>
+          </div>
+        </div>
+  
+  
+        <div>
+          <div id="loading" class="wrapper-entry" style="z-index: 999;opacity:.4;">
+            <svg class="spinnerr" width="65px" height="65px" viewBox="0 0 66 66" xmlns="http://www.w3.org/2000/svg">
+              <circle class="path" fill="none" stroke-width="6" stroke-linecap="round" cx="33" cy="33" r="30"></circle>
+            </svg>
+          </div>
+          <ul id="messageArea"  style="z-index: 99999;" #messages (scroll)="onUp()">
+          </ul>
+        </div>
+  
+        <form [formGroup]="messageForm" id="messageForm" name="messageForm">
+          <div class="form-group msendbox" style="position: fixed; bottom: 0;">
+            <div class="input-group clearfix mtext-input row">
+              <div class="col-lg-10 col-md-10 col-sm-12 textarea-col" style="display:flex;">
+                <textarea id="textarea" #inputMsg class="" style="overflow-y: auto;" rows="1"
+                  placeholder="Escreva seu texto aqui" formControlName="message" [(ngModel)]="message"
+                  (keyup.enter)="sendMessage($event)"></textarea>
+                <div class="msend " (click)="sendMessage($event)">
+                  <i class="fa fa-paper-plane" aria-hidden="true"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+  
+      </div>
+    </div>
+  </div>
+  
